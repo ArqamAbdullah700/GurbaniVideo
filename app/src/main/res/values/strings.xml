@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Gurbani Video</string>
+    <string name="baseUrl">https://www.gurbanistatus.in/GurbaniAppApi/</string>
+</resources>
