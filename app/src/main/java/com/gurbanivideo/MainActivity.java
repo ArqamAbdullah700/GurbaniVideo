@@ -1,14 +1,19 @@
 package com.gurbanivideo;
 
+import static android.content.ContentValues.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdRequest;
@@ -16,6 +21,11 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.ump.ConsentForm;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.FormError;
+import com.google.android.ump.UserMessagingPlatform;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
     GetVideosFromApi getVideoUrl;
     private AdView mAdView;
 
+    private ConsentInformation consentInformation;
+    private ConsentForm consentForms;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
         progressAllStatus = findViewById(R.id.progressAllStatus);
         listView = findViewById(R.id.listview);
         videoArrayList = new ArrayList<>();
+        ConsentRequestParameters params = new ConsentRequestParameters.Builder().setTagForUnderAgeOfConsent(false).build();
+        consentInformation = UserMessagingPlatform.getConsentInformation(this);
+        consentInformation.requestConsentInfoUpdate(this, params, this::loadForm, requestConsentError -> Log.w(TAG, String.format("%s: %s", requestConsentError.getErrorCode(), requestConsentError.getMessage())));
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {
@@ -69,6 +85,37 @@ public class MainActivity extends AppCompatActivity {
         getVideoUrl = new GetVideosFromApi();
         getVideoUrl.execute(GET_VideoURL);
         listView.setVisibility(View.VISIBLE);
+    }
+
+    private void loadForm() {
+        UserMessagingPlatform.loadConsentForm(this, new UserMessagingPlatform.OnConsentFormLoadSuccessListener() {
+            @Override
+            public void onConsentFormLoadSuccess(@NonNull ConsentForm consentForm) {
+                consentForms = consentForm;
+                if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
+                    consentForm.show(MainActivity.this, new ConsentForm.OnConsentFormDismissedListener() {
+                        @Override
+                        public void onConsentFormDismissed(@Nullable FormError formError) {
+                            if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.OBTAINED) {
+                                //App can start requesting ads.
+                                if (consentInformation.canRequestAds()) {
+                                    InitAdsAndShow();
+                                }
+                            } else {
+                                loadForm();
+                            }
+                        }
+                    });
+                } else if (consentInformation.canRequestAds()) {
+                    InitAdsAndShow();
+                }
+            }
+        }, new UserMessagingPlatform.OnConsentFormLoadFailureListener() {
+            @Override
+            public void onConsentFormLoadFailure(@NonNull FormError formError) {
+                //handel error
+            }
+        });
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -115,4 +162,16 @@ public class MainActivity extends AppCompatActivity {
             listView.setAdapter(videoAdapter);
         }
     }
+
+    public void InitAdsAndShow() {
+        MobileAds.initialize(MainActivity.this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+            }
+        });
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+    }
+
 }

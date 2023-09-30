@@ -55,5 +55,6 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         ads:adSize="BANNER"
+
         ads:adUnitId="ca-app-pub-2223313192114405/8235168575" />
 </LinearLayout>
