@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -15,6 +17,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -50,13 +53,18 @@ public class MainActivity extends AppCompatActivity {
     private ConsentInformation consentInformation;
     private ConsentForm consentForms;
 
-
+Toolbar toolbar;
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         progressAllStatus = findViewById(R.id.progressAllStatus);
         listView = findViewById(R.id.listview);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
         videoArrayList = new ArrayList<>();
         ConsentRequestParameters params = new ConsentRequestParameters.Builder().setTagForUnderAgeOfConsent(false).build();
         consentInformation = UserMessagingPlatform.getConsentInformation(this);
@@ -86,6 +94,31 @@ public class MainActivity extends AppCompatActivity {
         getVideoUrl.execute(GET_VideoURL);
         listView.setVisibility(View.VISIBLE);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_menu, menu);
+        return true;
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d("MenuItemClick", "Item ID: " + item.getItemId());
+
+        if (item.getItemId() == R.id.privacy) {
+            // Handle the privacy menu item click
+            startActivity(new Intent(MainActivity.this, PrivacyPolicy.class));
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+
+
 
     private void loadForm() {
         UserMessagingPlatform.loadConsentForm(this, new UserMessagingPlatform.OnConsentFormLoadSuccessListener() {
