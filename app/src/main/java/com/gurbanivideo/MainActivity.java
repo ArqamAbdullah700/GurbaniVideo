@@ -7,27 +7,19 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.ump.ConsentForm;
 import com.google.android.ump.ConsentInformation;
 import com.google.android.ump.ConsentRequestParameters;
-import com.google.android.ump.FormError;
 import com.google.android.ump.UserMessagingPlatform;
 
 import org.json.JSONArray;
@@ -41,19 +33,22 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    public static String GET_VideoURL = "https://www.gurbanistatus.in/GurbaniAppApi/gurbaniVideoApp.php";
+    public String GET_VideoURL = "https://www.gurbanistatus.in/GurbaniAppApi/gurbaniVideoApp.php";
+    public String GET_IMAGE_HUKUM_MORNING = "https://www.gurbanistatus.in/GurbaniAppApi/getVideos.php?section=KathaVichar";
+    public String GET_IMAGE_HUKUM_EVENING = "https://www.gurbanistatus.in/GurbaniAppApi/getVideos.php?section=GurbaniKirtan";
+
     private ProgressBar progressAllStatus;
     ArrayList<VideoListHolder> videoArrayList;
     VideoListAdapter videoAdapter = null;
     ListView listView;
-
+    TextView titleTv;
     GetVideosFromApi getVideoUrl;
     private AdView mAdView;
 
     private ConsentInformation consentInformation;
-    private ConsentForm consentForms;
 
-Toolbar toolbar;
+    Toolbar toolbar;
+
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,92 +57,82 @@ Toolbar toolbar;
         progressAllStatus = findViewById(R.id.progressAllStatus);
         listView = findViewById(R.id.listview);
         toolbar = findViewById(R.id.toolbar);
+        titleTv = findViewById(R.id.titleTv);
         setSupportActionBar(toolbar);
-
 
         videoArrayList = new ArrayList<>();
         ConsentRequestParameters params = new ConsentRequestParameters.Builder().setTagForUnderAgeOfConsent(false).build();
         consentInformation = UserMessagingPlatform.getConsentInformation(this);
         consentInformation.requestConsentInfoUpdate(this, params, this::loadForm, requestConsentError -> Log.w(TAG, String.format("%s: %s", requestConsentError.getErrorCode(), requestConsentError.getMessage())));
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(this, initializationStatus -> {
         });
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                VideoListHolder holder = (VideoListHolder) adapterView.getAdapter().getItem(i);
-                Intent intent = new Intent(MainActivity.this, Video_View_Activity.class);
-                intent.putExtra("URL", holder.getUrl());
-                intent.putExtra("ImageUrl", holder.getImageUrl());
-                intent.putExtra("Title", holder.getTitle());
-                intent.putExtra("Section", "mParam1");
-                startActivity(intent);
-            }
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            VideoListHolder holder = (VideoListHolder) adapterView.getAdapter().getItem(i);
+            Intent intent = new Intent(MainActivity.this, Video_View_Activity.class);
+            intent.putExtra("URL", holder.getUrl());
+            intent.putExtra("ImageUrl", holder.getImageUrl());
+            intent.putExtra("Title", holder.getTitle());
+            intent.putExtra("Section", "mParam1");
+            startActivity(intent);
         });
         getVideoUrl = new GetVideosFromApi();
+        String video = getIntent().getStringExtra("video");
+        assert video != null;
+        if (video.equals("Kirtan")) {
+            GET_VideoURL = GET_IMAGE_HUKUM_EVENING;
+          //  titleTv.setText(getString(R.string.gurbani_kirtan));
+        } else {
+            GET_VideoURL = GET_IMAGE_HUKUM_MORNING;
+           // titleTv.setText(getString(R.string.katha_vichar));
+
+        }
         getVideoUrl.execute(GET_VideoURL);
         listView.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_menu, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.action_menu, menu);
+//        return true;
+//    }
 
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d("MenuItemClick", "Item ID: " + item.getItemId());
-
-        if (item.getItemId() == R.id.privacy) {
-            // Handle the privacy menu item click
-            startActivity(new Intent(MainActivity.this, PrivacyPolicy.class));
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-
-
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        Log.d("MenuItemClick", "Item ID: " + item.getItemId());
+//
+//        if (item.getItemId() == R.id.privacy) {
+//            // Handle the privacy menu item click
+//            startActivity(new Intent(MainActivity.this, PrivacyPolicy.class));
+//            return true;
+//        } else {
+//            return super.onOptionsItemSelected(item);
+//        }
+//    }
 
 
     private void loadForm() {
-        UserMessagingPlatform.loadConsentForm(this, new UserMessagingPlatform.OnConsentFormLoadSuccessListener() {
-            @Override
-            public void onConsentFormLoadSuccess(@NonNull ConsentForm consentForm) {
-                consentForms = consentForm;
-                if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
-                    consentForm.show(MainActivity.this, new ConsentForm.OnConsentFormDismissedListener() {
-                        @Override
-                        public void onConsentFormDismissed(@Nullable FormError formError) {
-                            if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.OBTAINED) {
-                                //App can start requesting ads.
-                                if (consentInformation.canRequestAds()) {
-                                    InitAdsAndShow();
-                                }
-                            } else {
-                                loadForm();
-                            }
+        UserMessagingPlatform.loadConsentForm(this, consentForm -> {
+            if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
+                consentForm.show(MainActivity.this, formError -> {
+                    if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.OBTAINED) {
+                        //App can start requesting ads.
+                        if (consentInformation.canRequestAds()) {
+                            InitAdsAndShow();
                         }
-                    });
-                } else if (consentInformation.canRequestAds()) {
-                    InitAdsAndShow();
-                }
+                    } else {
+                        loadForm();
+                    }
+                });
+            } else if (consentInformation.canRequestAds()) {
+                InitAdsAndShow();
             }
-        }, new UserMessagingPlatform.OnConsentFormLoadFailureListener() {
-            @Override
-            public void onConsentFormLoadFailure(@NonNull FormError formError) {
-                //handel error
-            }
+        }, formError -> {
+            //handel error
         });
     }
 
@@ -162,9 +147,9 @@ Toolbar toolbar;
 
         @Override
         protected String doInBackground(String... strings) {
-            BufferedReader bufferedReader = null;
+            BufferedReader bufferedReader;
             StringBuilder sb = new StringBuilder();
-            URL url = null;
+            URL url;
             try {
                 url = new URL(strings[0]);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -172,7 +157,7 @@ Toolbar toolbar;
 
                 String json;
                 while ((json = bufferedReader.readLine()) != null) {
-                    sb.append(json + "\n");
+                    sb.append(json).append("\n");
                 }
                 JSONArray jsonArray = new JSONArray(sb.toString());
                 for (int i = jsonArray.length() - 1; i >= 0; i--) {
@@ -197,10 +182,7 @@ Toolbar toolbar;
     }
 
     public void InitAdsAndShow() {
-        MobileAds.initialize(MainActivity.this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(MainActivity.this, initializationStatus -> {
         });
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();

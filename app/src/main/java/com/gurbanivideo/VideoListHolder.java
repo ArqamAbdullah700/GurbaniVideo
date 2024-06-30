@@ -1,9 +1,9 @@
 package com.gurbanivideo;
 
 public class VideoListHolder {
-    private  String title;
-    private  String  url;
-    private  String  imageUrl;
+    private final String title;
+    private final String url;
+    private final String imageUrl;
 
     public VideoListHolder(String title, String url, String imageUrl) {
         this.title = title;
@@ -15,23 +15,12 @@ public class VideoListHolder {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getUrl() {
         return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public String getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }

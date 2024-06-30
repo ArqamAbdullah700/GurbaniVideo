@@ -15,7 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/purple_200"
+            android:background="#D65A00"
             android:elevation="5dp">
 
             <ImageView
@@ -23,14 +23,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/ic_baseline_arrow_back_24"
-                android:theme="@style/Theme.AppCompat" />
+                app:tint="@color/white"
+                android:theme="@style/Theme.AppCompat"
+               />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"
+                android:text="@string/save"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -55,7 +57,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
-                    android:text="Title"
+                    android:text=""
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -64,28 +66,52 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
                     android:layout_gravity="center"
+                    android:layout_margin="10dp"
                     app:cardCornerRadius="10dp">
 
                     <VideoView
                         android:id="@+id/VideoView"
                         android:layout_width="match_parent"
-                        android:layout_gravity="fill|center"
-                        android:layout_height="380dp" />
+                        android:layout_height="380dp"
+                        android:layout_gravity="fill|center" />
 
                 </androidx.cardview.widget.CardView>
 
-                <com.google.android.ads.nativetemplates.TemplateView
-                    android:id="@+id/my_template"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    app:gnt_template_type="@layout/gnt_medium_template_view" />
+                    android:layout_margin="5dp"
+                    app:cardElevation="5dp">
 
+                    <com.google.android.ads.nativetemplates.TemplateView
+                        android:id="@+id/my_template"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        app:gnt_template_type="@layout/gnt_small_template_view" />
+
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    app:cardElevation="5dp">
+
+                    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/adView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        ads:adSize="BANNER"
+                        ads:adUnitId="ca-app-pub-2223313192114405/8235168575" />
+                </androidx.cardview.widget.CardView>
 
 
                 <LinearLayout
+                    style="?android:attr/buttonBarStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -96,8 +122,11 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:layout_weight="1"
-                        android:text="Save"
-                        android:textAllCaps="false" />
+                        android:maxWidth="100dp"
+                        android:text="@string/save"
+                        android:textStyle="bold"
+                        android:textAllCaps="false"
+                        tools:ignore="ButtonStyle" />
 
                     <Button
                         android:id="@+id/shareVideoBtn"
@@ -105,28 +134,21 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:layout_weight="1"
-                        android:text="Share"
-                        android:textAllCaps="false" />
+                        android:textStyle="bold"
+                        android:maxWidth="100dp"
+                        android:text="@string/share"
+                        android:textAllCaps="false"
+                        tools:ignore="ButtonStyle" />
 
 
                 </LinearLayout>
-
 
 
             </LinearLayout>
         </ScrollView>
 
 
-        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-2223313192114405/8235168575" />
-
     </LinearLayout>
-
 
 
 </RelativeLayout>

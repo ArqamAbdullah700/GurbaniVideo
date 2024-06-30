@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Gurbani Video</string>
     <string name="baseUrl">https://www.gurbanistatus.in/GurbaniAppApi/</string>
+    <string name="katha_vichar">Katha Vichar</string>
+    <string name="gurbani_kirtan">Gurbani Kirtan</string>
+    <string name="todo">TODO</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="more_apps">More Apps</string>
+    <string name="gurbani_video">Gurbani Video</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="hukumnama">Hukumnama</string>
 </resources>
