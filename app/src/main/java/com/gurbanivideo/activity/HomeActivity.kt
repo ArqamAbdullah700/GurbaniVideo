@@ -4,17 +4,22 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
-import com.gurbanivideo.MainActivity
 import com.gurbanivideo.HukumnamaWeb
+import com.gurbanivideo.MainActivity
 import com.gurbanivideo.R
 import com.gurbanivideo.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
+    var toolbar: Toolbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
+        toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
         binding.cardKatha.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("video", "Katha")
@@ -44,3 +49,5 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(i, "Share URL"))}
     }
 }
+
+
