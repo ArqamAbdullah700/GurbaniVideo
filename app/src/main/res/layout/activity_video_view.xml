@@ -78,36 +78,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    app:cardElevation="5dp">
 
-                    <com.google.android.ads.nativetemplates.TemplateView
-                        android:id="@+id/my_template"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        app:gnt_template_type="@layout/gnt_small_template_view" />
-
-                </androidx.cardview.widget.CardView>
-
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    app:cardElevation="5dp">
-
-                    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/adView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        ads:adSize="BANNER"
-                        ads:adUnitId="ca-app-pub-2223313192114405/8235168575" />
-                </androidx.cardview.widget.CardView>
 
 
                 <LinearLayout

@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     TextView titleTv;
     GetVideosFromApi getVideoUrl;
-    private AdView mAdView;
 
     private ConsentInformation consentInformation;
 
@@ -61,14 +60,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         videoArrayList = new ArrayList<>();
-        ConsentRequestParameters params = new ConsentRequestParameters.Builder().setTagForUnderAgeOfConsent(false).build();
-        consentInformation = UserMessagingPlatform.getConsentInformation(this);
-        consentInformation.requestConsentInfoUpdate(this, params, this::loadForm, requestConsentError -> Log.w(TAG, String.format("%s: %s", requestConsentError.getErrorCode(), requestConsentError.getMessage())));
-        MobileAds.initialize(this, initializationStatus -> {
-        });
-        mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
 
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             VideoListHolder holder = (VideoListHolder) adapterView.getAdapter().getItem(i);
@@ -115,26 +106,6 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
 
-    private void loadForm() {
-        UserMessagingPlatform.loadConsentForm(this, consentForm -> {
-            if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
-                consentForm.show(MainActivity.this, formError -> {
-                    if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.OBTAINED) {
-                        //App can start requesting ads.
-                        if (consentInformation.canRequestAds()) {
-                            InitAdsAndShow();
-                        }
-                    } else {
-                        loadForm();
-                    }
-                });
-            } else if (consentInformation.canRequestAds()) {
-                InitAdsAndShow();
-            }
-        }, formError -> {
-            //handel error
-        });
-    }
 
     @SuppressLint("StaticFieldLeak")
     class GetVideosFromApi extends AsyncTask<String, Void, String> {
@@ -181,12 +152,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void InitAdsAndShow() {
-        MobileAds.initialize(MainActivity.this, initializationStatus -> {
-        });
-        mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-    }
+
 
 }

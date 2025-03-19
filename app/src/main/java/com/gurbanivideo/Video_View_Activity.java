@@ -80,26 +80,7 @@ public class Video_View_Activity extends AppCompatActivity {
         saveVideoBtn = findViewById(R.id.saveVideoBtn);
         shareVideoBtn = findViewById(R.id.shareVideoBtn);
         titleTextView = findViewById(R.id.txtTitleVideo);
-        MobileAds.initialize(this, initializationStatus -> {
-        });
 
-        MobileAds.initialize(this);
-        AdLoader adLoader = new AdLoader.Builder(this, "ca-app-pub-2223313192114405/8867709496")
-                .forNativeAd(nativeAd -> {
-                    NativeTemplateStyle styles = new
-                            NativeTemplateStyle.Builder().withMainBackgroundColor(new ColorDrawable(Color.WHITE)).build();
-                    TemplateView template = findViewById(R.id.my_template);
-                    template.setStyles(styles);
-                    template.setNativeAd(nativeAd);
-                })
-                .build();
-
-        adLoader.loadAd(new AdRequest.Builder().build());
-
-
-        AdView mAdView = findViewById(R.id.adView);
-        adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
 
         //deleteButton = findViewById(R.id.delete);
         titleTextView.setText(getIntent().getStringExtra("Title"));
